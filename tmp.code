@@ -1,0 +1,138 @@
+// Here we getAllcssRules across all the stylesheets in one array
+
+/*
+var toArray=Function.call.bind(Array.prototype.slice);
+var allRules=toArray(document.styleSheets).reduce(function(m,e){return m.concat(toArray(e.cssRules));},[]);
+console.dir(allRules);
+VM136:2 Uncaught TypeError: Array.prototype.slice called on null or undefined
+*/
+
+
+/*
+var matrix=[1,2,3,4,5,6,7,8,9];
+//
+const m=matrix,l=m.length>>>0;
+var i=0;
+while(i++<l){console.log(i);};
+*/
+
+
+//
+
+  var _aggregateStyleSheetRules=function(styleSheets) {
+    var rules=[];
+
+    for (var i=0, len=styleSheets.length; i < len; i++) {
+      var cssRules=styleSheets[i].cssRules,
+          mediaRules=[];
+
+      // CSSMediaRule has a child cssRules that needs to be added the the rules array
+      for (var j=0, mLen=cssRules.length; j < mLen; j++) {
+        if (cssRules[j].constructor.name === 'CSSMediaRule') {
+          mediaRules=mediaRules.concat(Array.prototype.slice.call(cssRules[j].cssRules));
+        }
+      }
+
+      rules=rules.concat(Array.prototype.slice.call(cssRules), mediaRules);
+    }
+
+    return rules;
+  };
+
+
+
+
+///
+function getMatchedCSSRules(element) {
+  var i, len, matching=[], sheets=document.styleSheets;
+
+  function loopRules(rules) {
+    var i, len, rule;
+
+    for (i=0, len=rules.length; i < len; i++) {
+      rule=rules[i];
+      if (rule instanceof CSSMediaRule) {
+        if (window.matchMedia(rule.conditionText).matches) {
+          loopRules(rule.cssRules);
+        }
+      } else if (rule instanceof CSSStyleRule) {
+        if (element.matches(rule.selectorText)) {
+          matching.push(rule);
+        }
+      }
+    }
+  };
+
+  for (i=0, len=sheets.length; i < len; i++) {
+    loopRules(sheets[i].cssRules);
+  }
+
+  return matching;
+}
+
+
+// Here we get the cssRules across all the stylesheets in one array
+var cssRules=slice(document.styleSheets).reduce(function(rules, styleSheet) {
+  return rules.concat(slice(styleSheet.cssRules));
+}, []);
+
+
+
+
+
+
+?function matches(elm, selector) {
+    var matches=(elm.document || elm.ownerDocument).querySelectorAll(selector),
+        i=matches.length;
+    while (--i >= 0 && matches.item(i) !== elm) {}
+    return i > -1;
+}
+
+module.exports={
+  regRGBA: /rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*([\d\.]+\s*)/gi,
+  regAllPseudo: /::(before|after|first-line|first-letter)/gi,
+  regBlankLine: /(\r\n|\n|\r)(\s*?\1)+/gi
+};
+function usePseudoElements(cssRule) {
+  if (cssRule.selector.match(utils.regAllPseudo)) {
+    cssRule.selector=cssRule.selector.replace(/::/g, ':');
+  }
+}
+
+
+
+
+function getCSSRule(ruleName, deleteFlag) {               // Return requested style obejct
+  if (document.styleSheets) {                             // If browser can play with stylesheets
+    for (var i=0; i<document.styleSheets.length; i++) {   // For each stylesheet
+      var styleSheet=document.styleSheets[i];             // Get the current Stylesheet
+      var ii=0;                                           // Initialize subCounter.
+      var cssRule=false;                                  // Initialize cssRule.
+      do {                                                // For each rule in stylesheet
+        if (styleSheet.cssRules) {                        // Browser uses cssRules?
+          cssRule=styleSheet.cssRules[ii];              // Yes -- Mozilla Style
+        } else {                                          // Browser usses rules?
+          cssRule=styleSheet.rules[ii];                 // Yes IE style.
+        }                                                 // End IE check.
+        if (cssRule)  {                                   // If we found a rule...
+          if (cssRule.selectorText==ruleName) {           // Does current rule match ruleName?
+            if (deleteFlag=='delete') {                   // Yes.  Are we deleteing?
+              if (styleSheet.cssRules) {                  // Yes, deleting...
+                styleSheet.deleteRule(ii);                // Delete rule, Moz Style
+              } else {                                    // Still deleting.
+                styleSheet.removeRule(ii);                // Delete rule IE style.
+              }                                           // End IE check.
+              return true;                                // return true, class deleted.
+            } else {                                      // found and not deleting.
+              return cssRule;                             // return the style object.
+            }                                             // End delete Check
+          }                                               // End found rule name
+        }                                                 // end found cssRule
+        ii++;                                             // Increment sub-counter
+      } while (cssRule)                                   // end While loop
+    }                                                     // end For loop
+  }                                                       // end styleSheet ability check
+  return false;                                           // we found NOTHING!
+}                                                         // end getCSSRule
+
+
