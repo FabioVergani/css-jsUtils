@@ -1,1 +1,9 @@
 
+// Here we getAllcssRules across all the stylesheets in one array
+
+/*
+var toArray=Function.call.bind(Array.prototype.slice);
+var allRules=toArray(document.styleSheets).reduce(function(m,e){return m.concat(toArray(e.cssRules));},[]);
+console.dir(allRules);
+VM136:2 Uncaught TypeError: Array.prototype.slice called on null or undefined
+*/
