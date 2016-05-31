@@ -1,14 +1,22 @@
 (function(){
 
  const setProto=Object.setPrototypeOf;
- const RawArray=function(){return setProto([],null);};
+ 
+ const RawArrayProto=setProto([],null);
+ RawArrayProto.add=function(x){const e=this;e[e.length]=x;};
+
+ const RawArray=function(){
+  const e=setProto([],RawArrayProto);
+  return e;
+ };
+
+
 
  var a=RawArray();
  a[0]=0;
-
  var b=RawArray();
  b[1]=1;
+ a.add(666);
  return {"a":a,"b":b};
-
 })();
 	
