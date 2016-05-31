@@ -1,0 +1,12 @@
+(function(){
+ const Call=Function.call;
+ const RawArray=function(){return Object.setPrototypeOf([],null)};
+
+ var a=RawArray();
+ a[0]=0;
+
+ var b=RawArray();
+ b[1]=1;
+ return {"a":a,"b":b};
+
+})();
