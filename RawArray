@@ -1,6 +1,7 @@
 (function(){
- const Call=Function.call;
- const RawArray=function(){return Object.setPrototypeOf([],null)};
+
+ const setProto=Object.setPrototypeOf;
+ const RawArray=function(){return setProto([],null);};
 
  var a=RawArray();
  a[0]=0;
@@ -10,3 +11,4 @@
  return {"a":a,"b":b};
 
 })();
+	
